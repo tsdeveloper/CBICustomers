@@ -25,11 +25,11 @@ app.UseStatusCodePagesWithReExecute("/errors/{0}");
 app.UseSwaggerDocumentation();
 
 app.UseStaticFiles();
-app.UseStaticFiles(new StaticFileOptions
-{
-    FileProvider = new PhysicalFileProvider(
-        Path.Combine(Directory.GetCurrentDirectory(), "Content")), RequestPath = "/Content"
-});
+// app.UseStaticFiles(new StaticFileOptions
+// {
+//     FileProvider = new PhysicalFileProvider(
+//         Path.Combine(Directory.GetCurrentDirectory(), "Content")), RequestPath = "/Content"
+// });
 
 app.UseCors("CorsPolicy");
 
@@ -37,20 +37,18 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapFallbackToController("Index", "Fallback");
+// app.MapIdentityApi<Client>();
+// app.MapFallbackToController("Index", "Fallback");
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
 var context = services.GetRequiredService<CBICustomersContext>();
-var identityContext = services.GetRequiredService<CBICustomersContext>();
 var userManager = services.GetRequiredService<UserManager<Client>>();
 var logger = services.GetRequiredService<ILogger<Program>>();
 try
 {
     await context.Database.MigrateAsync();
-    await identityContext.Database.MigrateAsync();
     // await CBICustomersContextSeed.SeedAsync(context);
-    // await AppIdentityDbContextSeed.SeedUsersAsync(userManager);
 }
 catch (Exception ex)
 {

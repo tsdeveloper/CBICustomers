@@ -10,28 +10,21 @@ namespace API.Extensions
 {
     public static class IdentityServiceExtensions
     {
-        public static IServiceCollection AddIdentityServices(this IServiceCollection services, 
+        public static IServiceCollection AddIdentityServices(this IServiceCollection services,
             IConfiguration config)
         {
-            services.AddDbContext<CBICustomersContext>(opt =>
-            {
-                opt.UseSqlServer(config.GetConnectionString("IdentityConnection"));
-            });
-
-            services.AddIdentityCore<Client>(opt => 
-            {
-                // add identity options here
-            })
+    
+            services.AddIdentityApiEndpoints<Client>()
             .AddEntityFrameworkStores<CBICustomersContext>()
             .AddSignInManager<SignInManager<Client>>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options => 
+                .AddJwtBearer(options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey  = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Token:Key"])),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Token:Key"])),
                         ValidIssuer = config["Token:Issuer"],
                         ValidateIssuer = true,
                         ValidateAudience = false

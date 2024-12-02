@@ -8,11 +8,11 @@ namespace Core.DTOs.Clients
 {
     public class ClientUpdateDTO
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Document { get; set; }
         public string Phone { get; set; }
-        public ICollection<ClientUpdateDTO> AddressList { get; set; } = new List<ClientUpdateDTO>();
+        public AddressUpdateDTO Address { get; set; }
 
     }
 
@@ -21,28 +21,48 @@ namespace Core.DTOs.Clients
         public string Name { get; set; }
         public string Document { get; set; }
         public string Phone { get; set; }
-        public ICollection<ClientCreateDTO> AddressList { get; set; } = new List<ClientCreateDTO>();
+        public AddressCreateDTO Address { get; set; }
 
     }
 
     public class ClientReturnDTO
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public string Name { get; set; }
         public string Document { get; set; }
         public string Phone { get; set; }
         public DateTime CreatedAt { get; set; }
-        public ICollection<ClientCreateDTO> AddressList { get; set; } = new List<ClientCreateDTO>();
+        public AddressReturnDTO Address { get; set; }
 
     }
 
     public class ClientFullReturnDTO
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         public DateTime CreatedAt { get; set; }
         public string Name { get; set; }
         public string Document { get; set; }
         public string Phone { get; set; }
-        public IReadOnlyList<AddressReturnDTO> AddressList { get; set; } = new List<AddressReturnDTO>();
+        public AddressReturnDTO Address { get; set; }
+    }
+
+    public class ClientLoginDto
+    {
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+
+    public class ClientRegisterDto
+    {
+        public string DisplayName { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+    }
+
+        public class ClientReturnRegisterDto
+    {
+        public string DisplayName { get; set; }
+        public string Token { get; set; }
+        public string Email { get; set; }
     }
 }

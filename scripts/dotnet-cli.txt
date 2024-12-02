@@ -1,0 +1,2 @@
+dotnet ef migrations add InitialCreate -s API -p Infra -c CBICustomersContext -o Migrations/SqlServerMigrations
+dotnet ef migrations add InitialCreate -s API -p Infra -c AppIdentityDbContext -o Migrations/IdentityMigrations

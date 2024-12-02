@@ -7,7 +7,7 @@ namespace Core.Specification.Clients
 {
     public class ClientByIdSpecification: BaseSpecification<Client>
     {
-        public ClientByIdSpecification(int id)
+        public ClientByIdSpecification(string id)
             : base(x => x.Id.Equals(id)
             )
         {

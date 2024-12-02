@@ -6,7 +6,7 @@ namespace Infra.Data
 {
     public class CBICustomersContext : DbContext
     {
-        public CBICustomersContext(DbContextOptions options) : base(options)
+        public CBICustomersContext(DbContextOptions<CBICustomersContext> options) : base(options)
         {
         }
 

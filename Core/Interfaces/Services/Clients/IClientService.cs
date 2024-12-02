@@ -10,8 +10,8 @@ namespace Core.Interfaces.Services.Clients
 {
     public interface IClientService
     {
-        Task<GenericResponse<Client>> CreateClientAsync(Client entity);
+        Task<GenericResponse<ClientReturnRegisterDto>> CreateClientAsync(ClientRegisterDto dto);
         Task<GenericResponse<Client>> UpdateClientAsync(ClientUpdateDTO dto);
-        Task<GenericResponse<bool>> DeleteClientAsync(int id);
+        Task<GenericResponse<bool>> DeleteClientAsync(string id);
     }
 }
