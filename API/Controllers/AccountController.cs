@@ -6,6 +6,8 @@ using Core.DTOs.Clients;
 using Core.Entities;
 using Core.Interfaces.Services;
 using Core.Interfaces.Services.Clients;
+using Core.Validators;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -19,17 +21,32 @@ public class AccountController : BaseAPIController
   private readonly ITokenService _tokenService;
   private readonly IMapper _mapper;
   private readonly IClientService _serviceClient;
-  public AccountController(UserManager<Client> userManager, SignInManager<Client> signInManager,
-      ITokenService tokenService, IMapper mapper, IClientService serviceClient)
-  {
-    _mapper = mapper;
-    _tokenService = tokenService;
-    _signInManager = signInManager;
-    _userManager = userManager;
-    _serviceClient = serviceClient;
-  }
+  private readonly IValidator<ClientRegisterDto> _validatorClientRegisterDto;
+  private readonly IValidator<ClientUpdateDTO> _validatorClientUpdateDTO;
+  private readonly IValidator<AddressCreateDTO> _validatorAddressCreateDTO;
+  private readonly IValidator<AddressUpdateDTO> _validatorAddressUpdateDTO;
+    public AccountController(UserManager<Client> userManager,
+     SignInManager<Client> signInManager,
+        ITokenService tokenService,
+        IMapper mapper,
+        IClientService serviceClient,
+        IValidator<ClientUpdateDTO> validatorClientUpdateDTO,
+        IValidator<AddressCreateDTO> validatorAddressCreateDTO,
+        IValidator<AddressUpdateDTO> validatorAddressUpdateDTO,
+        IValidator<ClientRegisterDto> validatorClientRegisterDto)
+    {
+        _mapper = mapper;
+        _tokenService = tokenService;
+        _signInManager = signInManager;
+        _userManager = userManager;
+        _serviceClient = serviceClient;
+        _validatorClientUpdateDTO = validatorClientUpdateDTO;
+        _validatorAddressCreateDTO = validatorAddressCreateDTO;
+        _validatorAddressUpdateDTO = validatorAddressUpdateDTO;
+        _validatorClientRegisterDto = validatorClientRegisterDto;
+    }
 
-  [Authorize]
+    [Authorize]
   [HttpGet]
   public async Task<ActionResult<ClientReturnDTO>> GetCurrentUser()
   {
@@ -39,9 +56,9 @@ public class AccountController : BaseAPIController
   }
 
   [HttpPost("login")]
-  public async Task<ActionResult<ClientReturnDTO>> Login(ClientLoginDto loginDto)
+  public async Task<ActionResult<ClientFullReturnDTO>> Login(ClientLoginDto loginDto)
   {
-    var user = await _userManager.FindByEmailAsync(loginDto.Email);
+    var user = await _userManager.GetUserByEmailWithAddress(loginDto.Email);
 
     if (user == null) return Unauthorized(new ApiResponse(401));
 
@@ -49,7 +66,7 @@ public class AccountController : BaseAPIController
 
     if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
 
-    return _mapper.Map<ClientReturnDTO>(user);
+    return _mapper.Map<ClientFullReturnDTO>(user);
   }
 
   [HttpPost("register")]
@@ -61,11 +78,54 @@ public class AccountController : BaseAPIController
       { Errors = new[] { "Email address is in use" } });
     }
 
+    var validator = _validatorClientRegisterDto.Validate(registerDto);
+
+    if (!validator.IsValid)
+      return BadRequest(new ApiResponse(400, validator.Errors.FirstOrDefault().ErrorMessage));
+
+
     var result = await _serviceClient.CreateClientAsync(registerDto);
 
     if (result.Error != null) return BadRequest(new ApiResponse(400, result.Error.Message));
 
     return result.Data;
+
+  }
+
+  [HttpPut("update")]
+  public async Task<ActionResult<ClientFullReturnDTO>> PutUpdate(ClientUpdateDTO dto)
+  {
+
+    var validator = _validatorClientUpdateDTO.Validate(dto);
+
+    if (!validator.IsValid)
+      return BadRequest(new ApiResponse(400, validator.Errors.FirstOrDefault().ErrorMessage));
+
+    if (dto.Address != null)
+    {
+      if (dto.Address.Id == 0)
+      {
+        var addressCreate = _mapper.Map<AddressCreateDTO>(dto.Address);
+
+        var validatorAddressCreateDTO = _validatorAddressCreateDTO.Validate(addressCreate);
+        if (!validatorAddressCreateDTO.IsValid)
+          return BadRequest(new ApiResponse(400, validatorAddressCreateDTO.Errors.FirstOrDefault().ErrorMessage));
+      }
+      else
+      {
+        var addressUpdate = _mapper.Map<AddressUpdateDTO>(dto.Address);
+
+        var validatorAddressUpdateDTO = _validatorAddressUpdateDTO.Validate(addressUpdate);
+        if (!validatorAddressUpdateDTO.IsValid)
+          return BadRequest(new ApiResponse(400, validatorAddressUpdateDTO.Errors.FirstOrDefault().ErrorMessage));
+      }
+    }
+
+    var result = await _serviceClient.UpdateClientAsync(dto);
+
+    if (result.Error != null) return BadRequest(new ApiResponse(400, result.Error.Message));
+
+    return _mapper.Map<ClientFullReturnDTO>(result.Data);
 
   }
 
@@ -98,5 +158,24 @@ public class AccountController : BaseAPIController
 
     return BadRequest("Problem updating the user");
 
+  }
+  [HttpGet("user-info")]
+  public async Task<ActionResult> GetUserInfo()
+  {
+    if (User.Identity?.IsAuthenticated == false) return NoContent();
+
+    var user = await _signInManager.UserManager.GetUserByEmailWithAddress(User);
+
+
+    user.Address = new Address
+    {
+      Name = "Address1",
+      City = "City1",
+      State = "State",
+      ZipCode = "123456",
+      ClientId = user.Id,
+    };
+
+    return Ok(_mapper.Map<ClientReturnDTO>(user));
   }
 }

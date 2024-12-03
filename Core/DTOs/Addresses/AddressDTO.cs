@@ -11,11 +11,10 @@ namespace Core.DTOs.Addresses
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int ClientId { get; set; }
+        public string ClientId { get; set; }
         public string ZipCode { get; set; }
         public string City { get; set; }
         public string State { get; set; }
-        public ClientReturnDTO Client { get; set; }
 
     }
 
@@ -23,7 +22,7 @@ namespace Core.DTOs.Addresses
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int ClientId { get; set; }
+        public string ClientId { get; set; }
         public string ZipCode { get; set; }
         public string City { get; set; }
         public string State { get; set; }
@@ -34,7 +33,7 @@ namespace Core.DTOs.Addresses
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int ClientId { get; set; }
+        public string ClientId { get; set; }
         public string ZipCode { get; set; }
         public string City { get; set; }
         public string State { get; set; }
@@ -44,7 +43,7 @@ namespace Core.DTOs.Addresses
     public class AddressCreateDTO
     {
         public string Name { get; set; }
-        public int ClientId { get; set; }
+        public string ClientId { get; set; }
         public string ZipCode { get; set; }
         public string City { get; set; }
         public string State { get; set; }

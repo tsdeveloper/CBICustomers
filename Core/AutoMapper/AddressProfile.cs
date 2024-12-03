@@ -13,25 +13,33 @@ namespace Core.AutoMapper
         public AddressProfile()
         {
             CreateMap<Address, AddressReturnDTO>()
-            .ForMember(x => x.Id, opt => opt.MapFrom(o => o.Id))            
-            .ForMember(x => x.ClientId, opt => opt.MapFrom(o => o.ClientId))            
-            .ForMember(x => x.Client, opt => opt.MapFrom(o => o.Client))            
+            .ForMember(x => x.Id, opt => opt.MapFrom(o => o.Id))
+            .ForMember(x => x.ClientId, opt => opt.MapFrom(o => o.ClientId))
            .ReverseMap();
 
             CreateMap<Address, AddressFullReturnDTO>()
-            .ForMember(x => x.Id, opt => opt.MapFrom(o => o.Id))            
-            .ForMember(x => x.ClientId, opt => opt.MapFrom(o => o.ClientId))            
-            .ForMember(x => x.Client, opt => opt.MapFrom(o => o.Client))            
-            .ReverseMap();  
+            .ForMember(x => x.Id, opt => opt.MapFrom(o => o.Id))
+            .ForMember(x => x.ClientId, opt => opt.MapFrom(o => o.ClientId))
+            .ForMember(x => x.Client, opt => opt.MapFrom(o => o.Client))
+            .ReverseMap();
 
             CreateMap<Address, AddressCreateDTO>()
-            .ForMember(x => x.ClientId, opt => opt.MapFrom(o => o.ClientId))      
-            ;      
+            .ForMember(x => x.ClientId, opt => opt.MapFrom(o => o.ClientId))
+            ;
+
+            CreateMap<AddressUpdateDTO, AddressCreateDTO>()
+            .ReverseMap();
 
             CreateMap<Address, AddressUpdateDTO>()
-            .ForMember(x => x.Id, opt => opt.MapFrom(o => o.Id))            
-            .ForMember(x => x.ClientId, opt => opt.MapFrom(o => o.ClientId))            
-            .ReverseMap();                    
+            .ForMember(x => x.Id, opt => opt.MapFrom(o => o.Id))
+            .ForMember(x => x.ClientId, opt => opt.MapFrom(o => o.ClientId))
+            .ReverseMap();
+
+            CreateMap<Address, Address>()
+            .ForMember(x => x.ClientId, opt => opt.MapFrom(o => o.ClientId))
+            .ForMember(x => x.CreatedAt, opt => opt.UseDestinationValue())
+            .ForMember(x => x.IsDeleted, opt => opt.UseDestinationValue())
+            ;
         }
     }
 }

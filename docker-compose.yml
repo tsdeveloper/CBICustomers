@@ -1,7 +1,7 @@
 services:
   sql-server:
     image: mcr.microsoft.com/azure-sql-edge
-    container_name: sql-server
+    container_name: sqlserver
     environment:
       ACCEPT_EULA: "1"
       MSSQL_SA_PASSWORD: "senha@123"

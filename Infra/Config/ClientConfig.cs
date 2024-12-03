@@ -8,8 +8,14 @@ namespace Infra.Config
     {
         public void Configure(EntityTypeBuilder<Client> b)
         {
-            b.Property(x => x.Phone)
+            b.Property(x => x.Name)
+            .HasMaxLength(150)
+            .IsRequired();
+
+            b.Property(x => x.PhoneNumber)
+            .HasMaxLength(11)
             .IsRequired(false);
+
 
             b.Property(x => x.UpdateAt)
             .IsRequired(false);

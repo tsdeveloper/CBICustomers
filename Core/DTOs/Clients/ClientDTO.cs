@@ -10,16 +10,15 @@ namespace Core.DTOs.Clients
     {
         public string Id { get; set; }
         public string Name { get; set; }
-        public string Document { get; set; }
+        public string Email { get; set; }
         public string Phone { get; set; }
-        public AddressUpdateDTO Address { get; set; }
+        public AddressUpdateDTO? Address { get; set; }
 
     }
 
     public class ClientCreateDTO
     {
         public string Name { get; set; }
-        public string Document { get; set; }
         public string Phone { get; set; }
         public AddressCreateDTO Address { get; set; }
 
@@ -27,9 +26,9 @@ namespace Core.DTOs.Clients
 
     public class ClientReturnDTO
     {
-        public string Id { get; set; }
+          public string Id { get; set; }
         public string Name { get; set; }
-        public string Document { get; set; }
+        public string Email { get; set; }
         public string Phone { get; set; }
         public DateTime CreatedAt { get; set; }
         public AddressReturnDTO Address { get; set; }
@@ -39,9 +38,8 @@ namespace Core.DTOs.Clients
     public class ClientFullReturnDTO
     {
         public string Id { get; set; }
-        public DateTime CreatedAt { get; set; }
         public string Name { get; set; }
-        public string Document { get; set; }
+        public string Email { get; set; }
         public string Phone { get; set; }
         public AddressReturnDTO Address { get; set; }
     }
@@ -54,15 +52,26 @@ namespace Core.DTOs.Clients
 
     public class ClientRegisterDto
     {
-        public string DisplayName { get; set; }
+        public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
     }
 
-        public class ClientReturnRegisterDto
+    public class ClientReturnRegisterDto
     {
-        public string DisplayName { get; set; }
+        public string Id { get; set; }
+        public string Name { get; set; }
         public string Token { get; set; }
         public string Email { get; set; }
+    }
+
+    public class ClientEditRegisterDto
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Phone { get; set; }
+        public AddressReturnDTO Address { get; set; }
+
     }
 }

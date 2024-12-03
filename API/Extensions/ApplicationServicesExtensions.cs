@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using API.Errors;
 using Core.Interfaces;
@@ -8,6 +9,7 @@ using Core.Interfaces.Repositories;
 using Core.Interfaces.Services;
 using Core.Interfaces.Services.Addresses;
 using Core.Interfaces.Services.Clients;
+using FluentValidation;
 using Infra.Data;
 using Infra.Repository;
 using Infra.Repository.Addresses;
@@ -30,11 +32,11 @@ namespace API.Extensions
             var connectionString = IsDevelopment
                      ? config.GetConnectionString("DEV-DOCKER-SQLSERVER") :
                      config.GetConnectionString("PRD-DOCKER-SQLSERVER");
-         
-                     services.AddDbContext<CBICustomersContext>(opt =>
-                     {
-                         opt.UseSqlServer(connectionString, o => o.MigrationsAssembly("Infra"));
-                     });
+
+            services.AddDbContext<CBICustomersContext>(opt =>
+            {
+                opt.UseSqlServer(connectionString, o => o.MigrationsAssembly("Infra"));
+            });
 
             services.AddScoped<IAddressRepository, AddressRepository>();
             services.AddScoped<IClientRepository, ClientRepository>();
@@ -70,6 +72,9 @@ namespace API.Extensions
                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200");
                 });
             });
+
+            services.AddValidatorsFromAssembly(Assembly.Load("Core"));
+
 
             return services;
         }
