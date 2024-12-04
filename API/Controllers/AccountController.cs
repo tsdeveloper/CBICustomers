@@ -26,30 +26,37 @@ public class AccountController : BaseAPIController
   private readonly IValidator<AddressCreateDTO> _validatorAddressCreateDTO;
   private readonly IValidator<AddressUpdateDTO> _validatorAddressUpdateDTO;
   private readonly ITokenService _serviceToken;
-    public AccountController(UserManager<Client> userManager,
-     SignInManager<Client> signInManager,
-        ITokenService tokenService,
-        IMapper mapper,
-        IClientService serviceClient,
-        IValidator<ClientUpdateDTO> validatorClientUpdateDTO,
-        IValidator<AddressCreateDTO> validatorAddressCreateDTO,
-        IValidator<AddressUpdateDTO> validatorAddressUpdateDTO,
-        IValidator<ClientRegisterDto> validatorClientRegisterDto,
-        ITokenService serviceToken)
-    {
-        _mapper = mapper;
-        _tokenService = tokenService;
-        _signInManager = signInManager;
-        _userManager = userManager;
-        _serviceClient = serviceClient;
-        _validatorClientUpdateDTO = validatorClientUpdateDTO;
-        _validatorAddressCreateDTO = validatorAddressCreateDTO;
-        _validatorAddressUpdateDTO = validatorAddressUpdateDTO;
-        _validatorClientRegisterDto = validatorClientRegisterDto;
-        _serviceToken = serviceToken;
-    }
 
-    [Authorize]
+  private readonly string _imageFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+  public AccountController(UserManager<Client> userManager,
+   SignInManager<Client> signInManager,
+      ITokenService tokenService,
+      IMapper mapper,
+      IClientService serviceClient,
+      IValidator<ClientUpdateDTO> validatorClientUpdateDTO,
+      IValidator<AddressCreateDTO> validatorAddressCreateDTO,
+      IValidator<AddressUpdateDTO> validatorAddressUpdateDTO,
+      IValidator<ClientRegisterDto> validatorClientRegisterDto,
+      ITokenService serviceToken)
+  {
+    _mapper = mapper;
+    _tokenService = tokenService;
+    _signInManager = signInManager;
+    _userManager = userManager;
+    _serviceClient = serviceClient;
+    _validatorClientUpdateDTO = validatorClientUpdateDTO;
+    _validatorAddressCreateDTO = validatorAddressCreateDTO;
+    _validatorAddressUpdateDTO = validatorAddressUpdateDTO;
+    _validatorClientRegisterDto = validatorClientRegisterDto;
+    _serviceToken = serviceToken;
+
+    if (!Directory.Exists(_imageFolder))
+    {
+      Directory.CreateDirectory(_imageFolder);
+    }
+  }
+
+  [Authorize]
   [HttpGet]
   public async Task<ActionResult<ClientReturnDTO>> GetCurrentUser()
   {
@@ -93,7 +100,7 @@ public class AccountController : BaseAPIController
 
     var result = await _serviceClient.CreateClientAsync(registerDto);
 
-    if (result.Error != null)  return BadRequest(new ApiResponse(400, validator.Errors.FirstOrDefault().ErrorMessage));
+    if (result.Error != null) return BadRequest(new ApiResponse(400, validator.Errors.FirstOrDefault().ErrorMessage));
 
     return Ok(result.Data);
 
@@ -107,26 +114,6 @@ public class AccountController : BaseAPIController
 
     if (!validator.IsValid)
       return BadRequest(new ApiResponse(400, validator.Errors.FirstOrDefault().ErrorMessage));
-
-    if (dto.Address != null)
-    {
-      if (dto.Address.Id == 0)
-      {
-        var addressCreate = _mapper.Map<AddressCreateDTO>(dto.Address);
-
-        var validatorAddressCreateDTO = _validatorAddressCreateDTO.Validate(addressCreate);
-        if (!validatorAddressCreateDTO.IsValid)
-          return BadRequest(new ApiResponse(400, validatorAddressCreateDTO.Errors.FirstOrDefault().ErrorMessage));
-      }
-      else
-      {
-        var addressUpdate = _mapper.Map<AddressUpdateDTO>(dto.Address);
-
-        var validatorAddressUpdateDTO = _validatorAddressUpdateDTO.Validate(addressUpdate);
-        if (!validatorAddressUpdateDTO.IsValid)
-          return BadRequest(new ApiResponse(400, validatorAddressUpdateDTO.Errors.FirstOrDefault().ErrorMessage));
-      }
-    }
 
     var result = await _serviceClient.UpdateClientAsync(dto);
 
@@ -142,46 +129,12 @@ public class AccountController : BaseAPIController
     return await _userManager.FindByEmailAsync(email) != null;
   }
 
-  [Authorize]
-  [HttpGet("address")]
-  public async Task<ActionResult<AddressReturnDTO>> GetUserAddress()
-  {
-    var user = await _userManager.FindUserByClaimsPrincipleWithAddress(User);
-
-    return _mapper.Map<Address, AddressReturnDTO>(user.Address);
-  }
-
-  [Authorize]
-  [HttpPut("address")]
-  public async Task<ActionResult<AddressReturnDTO>> UpdateUserAddress(AddressUpdateDTO address)
-  {
-    var user = await _userManager.FindUserByClaimsPrincipleWithAddress(User);
-
-    user.Address = _mapper.Map<AddressUpdateDTO, Address>(address);
-
-    var result = await _userManager.UpdateAsync(user);
-
-    if (result.Succeeded) return Ok(_mapper.Map<AddressReturnDTO>(user.Address));
-
-    return BadRequest("Problem updating the user");
-
-  }
   [HttpGet("user-info")]
   public async Task<ActionResult> GetUserInfo()
   {
     if (User.Identity?.IsAuthenticated == false) return NoContent();
 
     var user = await _signInManager.UserManager.GetUserByEmailWithAddress(User);
-
-
-    user.Address = new Address
-    {
-      Name = "Address1",
-      City = "City1",
-      State = "State",
-      ZipCode = "123456",
-      ClientId = user.Id,
-    };
 
     return Ok(_mapper.Map<ClientReturnDTO>(user));
   }

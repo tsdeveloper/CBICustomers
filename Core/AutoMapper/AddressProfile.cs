@@ -33,6 +33,8 @@ namespace Core.AutoMapper
             CreateMap<AddressUpdateDTO, Address>()
             .ForMember(x => x.Id, opt => opt.MapFrom(o => o.Id))
             .ForMember(x => x.ClientId, opt => opt.MapFrom(o => o.ClientId))
+            .ForMember(x => x.CreatedAt, opt => opt.UseDestinationValue())
+            .ForMember(x => x.IsDeleted, opt => opt.UseDestinationValue())
             .ReverseMap();
 
             CreateMap<Address, Address>()

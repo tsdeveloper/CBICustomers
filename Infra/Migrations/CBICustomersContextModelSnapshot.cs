@@ -62,8 +62,7 @@ namespace Infra.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClientId")
-                        .IsUnique();
+                    b.HasIndex("ClientId");
 
                     b.ToTable("Address");
                 });
@@ -96,9 +95,14 @@ namespace Infra.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Logo")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasColumnType("nvarchar(max)");
@@ -109,11 +113,9 @@ namespace Infra.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Phone")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
@@ -138,8 +140,8 @@ namespace Infra.Migrations
             modelBuilder.Entity("Core.Entities.Address", b =>
                 {
                     b.HasOne("Core.Entities.Client", "Client")
-                        .WithOne("Address")
-                        .HasForeignKey("Core.Entities.Address", "ClientId")
+                        .WithMany("AddressList")
+                        .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -148,8 +150,7 @@ namespace Infra.Migrations
 
             modelBuilder.Entity("Core.Entities.Client", b =>
                 {
-                    b.Navigation("Address")
-                        .IsRequired();
+                    b.Navigation("AddressList");
                 });
 #pragma warning restore 612, 618
         }

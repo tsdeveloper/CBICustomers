@@ -9,6 +9,8 @@ namespace Core.Specification.Addresses
     {
         public AddressWithClientSpecification(AddressSpecParams specParams)
             : base(x =>
+            x.ClientId.Contains(specParams.ClientId) &&
+            (specParams.Id == null || x.Id.Equals(specParams.Id)) &&
             (string.IsNullOrEmpty(specParams.Search) || x.Name.ToLower().Contains(specParams.Search)) &&
             (string.IsNullOrEmpty(specParams.City) || x.City == specParams.City) &&
             (string.IsNullOrEmpty(specParams.ZipCode) || x.ZipCode == specParams.ZipCode) &&

@@ -16,6 +16,10 @@ namespace Infra.Config
             .HasMaxLength(11)
             .IsRequired(false);
 
+            b.Property(x => x.Logo)
+            .HasMaxLength(100)
+            .IsRequired(false);            
+
 
             b.Property(x => x.UpdateAt)
             .IsRequired(false);

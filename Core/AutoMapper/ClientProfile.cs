@@ -19,7 +19,7 @@ namespace Core.AutoMapper
 
             CreateMap<Client, ClientFullReturnDTO>()
             .ForMember(x => x.Phone, opt => opt.MapFrom(o => o.PhoneNumber))
-            .ForMember(x => x.AddressList, opt => opt.MapFrom(o => o.Address))
+            .ForMember(x => x.AddressList, opt => opt.MapFrom(o => o.AddressList))
             .ReverseMap();
 
             CreateMap<Client, ClientCreateDTO>()

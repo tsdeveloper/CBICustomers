@@ -1,0 +1,15 @@
+@API_HostAddress = http://localhost:7001/api
+
+GET {{API_HostAddress}}/address
+Accept: application/json
+
+###
+
+### GET DETAILS BY ID
+@addresId = 1
+@clientId = 0c2c3525-9ef6-4ed6-a600-a4efecf0ab84
+GET {{API_HostAddress}}/address/details/{{clientId}}/{{addresId}}
+Accept: application/json
+Content-Type: application/json
+
+###

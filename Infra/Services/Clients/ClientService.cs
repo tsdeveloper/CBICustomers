@@ -66,8 +66,7 @@ namespace Infra.Services.Clients
         public async Task<GenericResponse<Client>> UpdateClientAsync(ClientUpdateDTO dto)
         {
             var response = new GenericResponse<Client>();
-            var specAddress = new AddressByIdSpecification(dto.Address != null ? dto.Address.Id : 0);
-            var address = await _unitOfWork.Repository<Address>().GetEntityWithSpec(specAddress);
+
             // check to see if client exists
             var spec = new ClientByIdSpecification(dto.Id);
             var client = await _unitOfWork.Repository<Client>().GetEntityWithSpec(spec);
@@ -83,26 +82,6 @@ namespace Infra.Services.Clients
             client.UpdateAt = DateTime.UtcNow;
             _unitOfWork.Repository<Client>().Update(client);
 
-           if (client.Address != null)
-           {
-             if (client.Address.Id == 0)
-                 _unitOfWork.Repository<Address>().Add(client.Address);
-             else
-             {
-                 address = _mapper.Map<Address, Address>(address, client.Address);
- 
-                 if (address == null)
-                 {
-                     response.Error = new MessageResponse { Message = $"Endereço com ID {client.Address.Id} não encontrado!" };
-                     return response;
-                 }
- 
-                 address.UpdateAt = DateTime.UtcNow;
-                 _unitOfWork.Repository<Address>().Update(address);
- 
-             }
- 
-           }
             // save to db
             var result = await _unitOfWork.Complete();
 
@@ -133,7 +112,7 @@ namespace Infra.Services.Clients
             if (result.Error != null)
             {
                 response.Error = result.Error;
-            };
+            }
 
             // return client
             return response;

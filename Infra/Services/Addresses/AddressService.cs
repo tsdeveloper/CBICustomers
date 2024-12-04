@@ -9,6 +9,7 @@ using Core.Entities;
 using Core.Interfaces;
 using Core.Interfaces.Services.Addresses;
 using Core.Specification.Addresses;
+using Core.Specification.Clients.SpecParams;
 
 namespace Infra.Services.Addresss
 {
@@ -27,10 +28,10 @@ namespace Infra.Services.Addresss
         {
             var response = new GenericResponse<Address>();
             // check to see if address exists
-            var spec = new AddressByIdSpecification(dto.Id);
+            var spec = new AddressWithClientSpecification(new AddressSpecParams {Id = dto.Id, ClientId = dto.ClientId});
             var address = await _unitOfWork.Repository<Address>().GetEntityWithSpec(spec);
 
-            if (address != null)
+            if (address == null)
             {
                 response.Error = new MessageResponse { Message = $"Endereço com {dto.Id} não encontrado!" };
                 return response;
@@ -46,7 +47,7 @@ namespace Infra.Services.Addresss
             if (result.Error != null)
             {
                 response.Error = result.Error;
-            };
+            }
 
             // return order
             return response;
@@ -64,7 +65,7 @@ namespace Infra.Services.Addresss
             if (result.Error != null)
             {
                 response.Error = result.Error;
-            };
+            }
 
             // return order
             return response;
@@ -86,7 +87,7 @@ namespace Infra.Services.Addresss
             if (result.Error != null)
             {
                 response.Error = result.Error;
-            };
+            }
 
             // return address
             return response;

@@ -15,8 +15,8 @@ namespace Infra.Config
             b.Property(e => e.State).HasMaxLength(2).IsRequired(false);
 
             b.HasOne(p => p.Client)
-            .WithOne(p => p.Address)
-            .HasForeignKey<Address>(x => x.ClientId);
+            .WithMany(p => p.AddressList)
+            .HasForeignKey(x => x.ClientId);
         }
     }
 }

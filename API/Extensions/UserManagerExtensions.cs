@@ -12,7 +12,7 @@ public static class UserManagerExtensions
         {
             var email = user.FindFirstValue(ClaimTypes.Email);
 
-            return await userManager.Users.Include(x => x.Address)
+            return await userManager.Users.Include(x => x.AddressList)
                 .SingleOrDefaultAsync(x => x.Email == email);
         }
 

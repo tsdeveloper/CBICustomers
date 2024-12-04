@@ -64,7 +64,7 @@ namespace API.Controllers
                 paramsQuery.PageSize, totalItems, data));
         }
 
-        [HttpGet("details/{id:int}")]
+        [HttpGet("details/{clientId:guid}/{id:int}")]
         [ProducesDefaultResponseType]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -72,9 +72,9 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<AddressReturnDTO>> GetDetalhesPorId(int id)
+        public async Task<ActionResult<AddressReturnDTO>> GetAddressById(Guid clientId, int id)
         {
-            var spec = new AddressWithClientSpecification(new AddressSpecParams { Id = id });
+            var spec = new AddressWithClientSpecification(new AddressSpecParams { Id = id, ClientId = clientId.ToString() });
             var result = await _genericAddress.GetEntityWithSpec(spec);
 
             return Ok(_mapper.Map<AddressReturnDTO>(result));
@@ -88,20 +88,20 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<AddressReturnDTO>> PostCadastrarAddress(AddressCreateDTO dto)
+        public async Task<ActionResult<AddressReturnDTO>> PostAddressCreate(AddressCreateDTO dto)
         {
-            var AddressValidator = _validatorAddressCreateDTO.Validate(dto);
+            var validator = _validatorAddressCreateDTO.Validate(dto);
 
-            if (!AddressValidator.IsValid)
-                return BadRequest(new ApiResponse(400, AddressValidator.Errors.FirstOrDefault().ErrorMessage));
+            if (!validator.IsValid)
+                return BadRequest(new ApiResponse(400, validator.Errors.FirstOrDefault().ErrorMessage));
 
-            var Address = _mapper.Map<Address>(dto);
-            var result = await _serviceAddress.CreateAddressAsync(Address);
+            var address = _mapper.Map<Address>(dto);
+            var result = await _serviceAddress.CreateAddressAsync(address);
 
             if (result.Error != null) return BadRequest(new ApiResponse(400, result.Error.Message));
-            var resultDto = _mapper.Map<AddressReturnDTO>(Address);
+            var resultDto = _mapper.Map<AddressReturnDTO>(address);
 
-            return CreatedAtAction(nameof(GetDetalhesPorId), new { id = resultDto.Id }, resultDto);
+            return CreatedAtAction(nameof(GetAddressById), new {clientId = address.ClientId  ,id = resultDto.Id,  }, resultDto);
         }
 
         [HttpPut("editar")]
@@ -112,7 +112,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<AddressReturnDTO>> PutAtualizarAddress(AddressUpdateDTO dto)
+        public async Task<ActionResult<AddressReturnDTO>> PutddressUpdate(AddressUpdateDTO dto)
         {
             var validator = _validatorAddressUpdateDTO.Validate(dto);
 
@@ -134,7 +134,7 @@ namespace API.Controllers
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<AddressReturnDTO>> DeleteAutorPorBy(int id)
+        public async Task<ActionResult<AddressReturnDTO>> DeleteAddressById(int id)
         {
             var result = await _serviceAddress.DeleteAddressAsync(id);
 

@@ -19,7 +19,7 @@ namespace API.Extensions
         public static async Task<Client> GetUserByEmailWithAddress(this UserManager<Client> userManager, string email)
         {
             var userToReturn = await userManager.Users
-                .Include(x => x.Address)
+                .Include(x => x.AddressList)
                 .FirstOrDefaultAsync(x => x.Email == email);
 
             if (userToReturn == null) throw new AuthenticationException("User not found");
@@ -31,7 +31,7 @@ namespace API.Extensions
         ClaimsPrincipal user)
         {
             var userToReturn = await userManager.Users
-                .Include(x => x.Address)
+                .Include(x => x.AddressList)
                 .FirstOrDefaultAsync(x => x.Email == user.GetEmail());
 
             if (userToReturn == null) throw new AuthenticationException("User not found");
