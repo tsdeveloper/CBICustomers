@@ -25,6 +25,7 @@ public class AccountController : BaseAPIController
   private readonly IValidator<ClientUpdateDTO> _validatorClientUpdateDTO;
   private readonly IValidator<AddressCreateDTO> _validatorAddressCreateDTO;
   private readonly IValidator<AddressUpdateDTO> _validatorAddressUpdateDTO;
+  private readonly ITokenService _serviceToken;
     public AccountController(UserManager<Client> userManager,
      SignInManager<Client> signInManager,
         ITokenService tokenService,
@@ -33,7 +34,8 @@ public class AccountController : BaseAPIController
         IValidator<ClientUpdateDTO> validatorClientUpdateDTO,
         IValidator<AddressCreateDTO> validatorAddressCreateDTO,
         IValidator<AddressUpdateDTO> validatorAddressUpdateDTO,
-        IValidator<ClientRegisterDto> validatorClientRegisterDto)
+        IValidator<ClientRegisterDto> validatorClientRegisterDto,
+        ITokenService serviceToken)
     {
         _mapper = mapper;
         _tokenService = tokenService;
@@ -44,6 +46,7 @@ public class AccountController : BaseAPIController
         _validatorAddressCreateDTO = validatorAddressCreateDTO;
         _validatorAddressUpdateDTO = validatorAddressUpdateDTO;
         _validatorClientRegisterDto = validatorClientRegisterDto;
+        _serviceToken = serviceToken;
     }
 
     [Authorize]
@@ -56,7 +59,7 @@ public class AccountController : BaseAPIController
   }
 
   [HttpPost("login")]
-  public async Task<ActionResult<ClientFullReturnDTO>> Login(ClientLoginDto loginDto)
+  public async Task<ActionResult<ClientReturnRegisterDto>> Login(ClientLoginDto loginDto)
   {
     var user = await _userManager.GetUserByEmailWithAddress(loginDto.Email);
 
@@ -66,7 +69,11 @@ public class AccountController : BaseAPIController
 
     if (!result.Succeeded) return Unauthorized(new ApiResponse(401));
 
-    return _mapper.Map<ClientFullReturnDTO>(user);
+    var clientUserLogin = _mapper.Map<ClientReturnRegisterDto>(user);
+
+    clientUserLogin.Token = _serviceToken.CreateToken(user);
+
+    return Ok(clientUserLogin);
   }
 
   [HttpPost("register")]
@@ -86,9 +93,9 @@ public class AccountController : BaseAPIController
 
     var result = await _serviceClient.CreateClientAsync(registerDto);
 
-    if (result.Error != null) return BadRequest(new ApiResponse(400, result.Error.Message));
+    if (result.Error != null)  return BadRequest(new ApiResponse(400, validator.Errors.FirstOrDefault().ErrorMessage));
 
-    return result.Data;
+    return Ok(result.Data);
 
   }
 

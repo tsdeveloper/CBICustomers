@@ -19,11 +19,10 @@ namespace Core.AutoMapper
 
             CreateMap<Client, ClientFullReturnDTO>()
             .ForMember(x => x.Phone, opt => opt.MapFrom(o => o.PhoneNumber))
-            .ForMember(x => x.Address, opt => opt.MapFrom(o => o.Address))
+            .ForMember(x => x.AddressList, opt => opt.MapFrom(o => o.Address))
             .ReverseMap();
 
             CreateMap<Client, ClientCreateDTO>()
-            .ForMember(x => x.Address, opt => opt.MapFrom(o => o.Address))
             .ReverseMap();
 
             CreateMap<ClientUpdateDTO, Client>()
@@ -42,7 +41,6 @@ namespace Core.AutoMapper
             .ForMember(x => x.NormalizedUserName, opt => opt.UseDestinationValue())
             .ForMember(x => x.SecurityStamp, opt => opt.UseDestinationValue())
             .ForMember(x => x.TwoFactorEnabled, opt => opt.UseDestinationValue())
-            .ForMember(x => x.Address, opt => opt.MapFrom(d => d.Address))
             .ReverseMap();
 
             CreateMap<ClientRegisterDto, Client>()

@@ -23,14 +23,14 @@ namespace Core.AutoMapper
             .ForMember(x => x.Client, opt => opt.MapFrom(o => o.Client))
             .ReverseMap();
 
-            CreateMap<Address, AddressCreateDTO>()
+            CreateMap<AddressCreateDTO, Address>()
             .ForMember(x => x.ClientId, opt => opt.MapFrom(o => o.ClientId))
             ;
 
             CreateMap<AddressUpdateDTO, AddressCreateDTO>()
             .ReverseMap();
 
-            CreateMap<Address, AddressUpdateDTO>()
+            CreateMap<AddressUpdateDTO, Address>()
             .ForMember(x => x.Id, opt => opt.MapFrom(o => o.Id))
             .ForMember(x => x.ClientId, opt => opt.MapFrom(o => o.ClientId))
             .ReverseMap();

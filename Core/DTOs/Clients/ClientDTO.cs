@@ -12,7 +12,6 @@ namespace Core.DTOs.Clients
         public string Name { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public AddressUpdateDTO? Address { get; set; }
 
     }
 
@@ -20,7 +19,7 @@ namespace Core.DTOs.Clients
     {
         public string Name { get; set; }
         public string Phone { get; set; }
-        public AddressCreateDTO Address { get; set; }
+        public IReadOnlyList<AddressReturnDTO> AddressList { get; set; } = new List<AddressReturnDTO>();
 
     }
 
@@ -31,7 +30,7 @@ namespace Core.DTOs.Clients
         public string Email { get; set; }
         public string Phone { get; set; }
         public DateTime CreatedAt { get; set; }
-        public AddressReturnDTO Address { get; set; }
+        public IReadOnlyList<AddressReturnDTO> AddressList { get; set; } = new List<AddressReturnDTO>();
 
     }
 
@@ -41,7 +40,7 @@ namespace Core.DTOs.Clients
         public string Name { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public AddressReturnDTO Address { get; set; }
+        public IReadOnlyList<AddressReturnDTO> AddressList { get; set; } = new List<AddressReturnDTO>();
     }
 
     public class ClientLoginDto
@@ -71,7 +70,7 @@ namespace Core.DTOs.Clients
         public string Name { get; set; }
         public string Email { get; set; }
         public string Phone { get; set; }
-        public AddressReturnDTO Address { get; set; }
+        public IReadOnlyList<AddressReturnDTO> AddressList { get; set; } = new List<AddressReturnDTO>();
 
     }
 }

@@ -8,5 +8,6 @@ namespace Core.Entities
         public Address Address { get; set; } 
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdateAt { get; set; }
+        public ICollection<Address> AddressList { get; set; } = new List<Address>();
     }
 }
